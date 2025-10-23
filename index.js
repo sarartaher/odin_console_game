@@ -1,5 +1,17 @@
-const prompt = require("prompt-sync")({ sigint: true }); 
+// Select buttons 
+let btn1 = document.querySelector(".btn1");
+let btn2 = document.querySelector(".btn2");
+let btn3 = document.querySelector(".btn3");
+let resultsDiv = document.querySelector(".results");
+let scoreDiv = document.querySelector(".score");
 
+
+
+// Initialize scores
+let humanScore = 0;
+let computerScore = 0;
+
+// Function to generate computer's choice
 function getComputerChoice() {
     let rand = Math.random();
     if (rand < 1 / 3) {
@@ -11,65 +23,57 @@ function getComputerChoice() {
     }
 }
 
-function getHumanChoice() {
-    let strh = prompt("Make your Choice [Rock, Paper or Scissor]: ");
-    strh = strh.charAt(0).toUpperCase() + strh.slice(1).toLowerCase();
-
-    if (strh === "Rock" || strh === "Paper" || strh === "Scissor") {
-        return strh;
-    } else {
-        console.log("Invalid. Please try again!");
-        return null;
+// Function to play 
+function playRound(humanChoice) {
+    // Stop game if someone already won
+    if (humanScore >= 5 || computerScore >= 5) {
+        return;
     }
-}
 
-function playRound(humanChoice, computerChoice) {
+    // Get computer choice
+    let computerChoice = getComputerChoice();
+
+    // Initialize result string
+    let result = "";
+
+    // Determine round outcome
     if (humanChoice === computerChoice) {
-        console.log("Tie !!! Draw Again!");
-        return "tie";
+        result = "Tie !!! Draw Again!";
     } else if (
         (humanChoice === "Rock" && computerChoice === "Scissor") ||
         (humanChoice === "Paper" && computerChoice === "Rock") ||
         (humanChoice === "Scissor" && computerChoice === "Paper")
     ) {
-        console.log(`You win! ${humanChoice} beats ${computerChoice}.`);
-        return "win";
+        result = `You win! ${humanChoice} beats ${computerChoice}.`;
+        humanScore++;
     } else {
-        console.log(`You lose! ${computerChoice} beats ${humanChoice}.`);
-        return "lose";
+        result = `You lose! ${computerChoice} beats ${humanChoice}.`;
+        computerScore++;
+    }
+
+    // Update results 
+    resultsDiv.textContent = result;
+
+    // Update scores 
+    scoreDiv.textContent = `Score: You = ${humanScore}, Computer = ${computerScore}`;
+
+    // Check who won
+    if (humanScore === 5) {
+        resultsDiv.textContent = "You are the Winner!";
+    } else if (computerScore === 5) {
+        resultsDiv.textContent = "Computer Wins!";
     }
 }
 
-// ----- Play 5 rounds -----
-let humanScore = 0;
-let computerScore = 0;
+// Add onclick handlers for each button
+btn1.onclick = function() {
+    playRound("Rock");
+};
 
-for (let round = 1; round <= 5; round++) {
-    console.log(`\n Round ${round} `);
+btn2.onclick = function() {
+    playRound("Paper");
+};
 
-    let humanChoice = getHumanChoice();
-    if (!humanChoice) {
-        round--; 
-        continue;
-    }
-
-    let computerChoice = getComputerChoice();
-    console.log("You chose:", humanChoice);
-    console.log("Computer chose:", computerChoice);
-
-    let result = playRound(humanChoice, computerChoice);
-    if (result === "win") humanScore++;
-    else if (result === "lose") computerScore++;
-
-    console.log(`Score: You = ${humanScore}, Computer = ${computerScore}`);
-}
-
-// ----- Final result -----
-console.log("\nFinal Results:");
-if (humanScore > computerScore) {
-    console.log(" You are the Winner!");
-} else if (humanScore < computerScore) {
-    console.log(" Computer Wins!");
-} else {
-    console.log(" It's a Draw!");
-}
+btn3.onclick = function() {
+    playRound("Scissor");
+};
